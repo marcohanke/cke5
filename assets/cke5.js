@@ -6,6 +6,32 @@
           return;
         }
         window.__cke5RuntimeInitialized = true;
+
+        // Gemeinsame Weiche klassischer Medienpool <-> MediaPlace, rein
+        // feature-detected (kein Setting, keine harte Abhaengigkeit dieses
+        // Addons auf MediaPlace): existiert MP3.open()/.openFile() auf der
+        // Seite, wird MediaPlace benutzt, sonst bleibt jeder Aufrufer bei
+        // seinem klassischen Fallback (openREXMedia/openMediaPool). Gleiches
+        // globales Objekt wie im tinymce-Addon (assets/scripts/base.js) --
+        // schon vorhanden guard, falls beide Addons auf derselben Seite aktiv
+        // sind.
+        window.rex5MediaplaceBridge = window.rex5MediaplaceBridge || {
+          isActive: function () {
+            return typeof MP3 !== "undefined" && typeof MP3.open === "function";
+          },
+          // onSelect(filename) wie bei den klassischen Popups; options.filter
+          // waehlt optional den Start-Typ-Tab vor (z.B. "images", "videos").
+          pick: function (onSelect, options) {
+            MP3.open(onSelect, options || {});
+          },
+          // Oeffnet den Overlay direkt im Detail-Panel einer Datei (Browse-only).
+          show: function (filename) {
+            if (typeof MP3.openFile === "function") {
+              MP3.openFile(filename);
+            }
+          }
+        };
+
         let ckeditors = {};
         let cke5BalloonBindings = {};
         let cke5MinimapBindings = {};
@@ -894,6 +920,17 @@
           });
         }
         function cke5_open_redaxo_media_link(editor, linkConfig) {
+          const mediaPath = typeof linkConfig.rexmedia_path === "string" && linkConfig.rexmedia_path !== "" ? linkConfig.rexmedia_path : "/media/";
+          const handleSelected = (filename) => {
+            cke5_apply_link_to_form_or_editor(editor, mediaPath + filename, filename);
+          };
+
+          const bridge = window.rex5MediaplaceBridge;
+          if (bridge && bridge.isActive()) {
+            bridge.pick(handleSelected, {});
+            return;
+          }
+
           if (typeof window.openREXMedia !== "function" || typeof window.jQuery !== "function") {
             return;
           }
@@ -904,14 +941,13 @@
           if (typeof linkConfig.rexmedia_types === "string" && linkConfig.rexmedia_types !== "") {
             query += "&args[types]=" + linkConfig.rexmedia_types;
           }
-          const mediaPath = typeof linkConfig.rexmedia_path === "string" && linkConfig.rexmedia_path !== "" ? linkConfig.rexmedia_path : "/media/";
           const popup = window.openREXMedia("cke5_medialink", query);
           window.jQuery(popup).off("rex:selectMedia.cke5").on("rex:selectMedia.cke5", (event, filename) => {
             event.preventDefault();
             if (popup && typeof popup.close === "function") {
               popup.close();
             }
-            cke5_apply_link_to_form_or_editor(editor, mediaPath + filename, filename);
+            handleSelected(filename);
           });
         }
         function cke5_safe_prompt(title, defaultValue) {

@@ -158,11 +158,12 @@
             return false;
           }
 
-          if (cmd.id === 'redaxoMediaImage' && typeof window.openREXMedia !== 'function') {
-            return false;
-          }
-
           if (cmd.id === 'redaxoMediaImage') {
+            var bridge = window.rex5MediaplaceBridge;
+            var mediaplaceReady = bridge && bridge.isActive();
+            if (!mediaplaceReady && typeof window.openREXMedia !== 'function') {
+              return false;
+            }
             return true;
           }
 
@@ -354,20 +355,7 @@
         }
 
         function executeMediaPoolImage() {
-          if (typeof window.openREXMedia !== 'function' || typeof window.jQuery !== 'function') {
-            return;
-          }
-
           var imageConfig = editor.config.get('image') || {};
-          var mediaTypes = typeof imageConfig.rexmedia_types === 'string' && imageConfig.rexmedia_types !== ''
-            ? imageConfig.rexmedia_types
-            : 'jpg,jpeg,png,gif,bmp,tiff,svg,webp,heic,heif';
-          var query = '&args[types]=' + mediaTypes;
-          if (typeof imageConfig.rexmedia_category !== 'undefined') {
-            query += '&rex_file_category=' + imageConfig.rexmedia_category;
-          }
-
-          var popup = window.openREXMedia('cke5_mediaimage', query);
           var mediaPath = '/media/';
           if (typeof imageConfig.rexmedia_manager_type === 'string' && imageConfig.rexmedia_manager_type !== '') {
             mediaPath = '/index.php?rex_media_type=' + imageConfig.rexmedia_manager_type + '&rex_media_file=';
@@ -375,12 +363,7 @@
             mediaPath = imageConfig.rexmedia_path;
           }
 
-          window.jQuery(popup).off('rex:selectMedia.cke5.quickedit').on('rex:selectMedia.cke5.quickedit', function (event, filename) {
-            event.preventDefault();
-            if (popup && typeof popup.close === 'function') {
-              popup.close();
-            }
-
+          function handleSelected(filename) {
             var source = mediaPath + filename;
             var selectedElement = editor.model.document.selection.getSelectedElement();
             var imageUtils = editor.plugins && editor.plugins.has('ImageUtils') ? editor.plugins.get('ImageUtils') : null;
@@ -391,6 +374,33 @@
             } else if (editor.commands.get('imageInsert')) {
               editor.execute('imageInsert', { source: source });
             }
+          }
+
+          var bridge = window.rex5MediaplaceBridge;
+          if (bridge && bridge.isActive()) {
+            bridge.pick(handleSelected, { filter: 'images' });
+            return;
+          }
+
+          if (typeof window.openREXMedia !== 'function' || typeof window.jQuery !== 'function') {
+            return;
+          }
+
+          var mediaTypes = typeof imageConfig.rexmedia_types === 'string' && imageConfig.rexmedia_types !== ''
+            ? imageConfig.rexmedia_types
+            : 'jpg,jpeg,png,gif,bmp,tiff,svg,webp,heic,heif';
+          var query = '&args[types]=' + mediaTypes;
+          if (typeof imageConfig.rexmedia_category !== 'undefined') {
+            query += '&rex_file_category=' + imageConfig.rexmedia_category;
+          }
+
+          var popup = window.openREXMedia('cke5_mediaimage', query);
+          window.jQuery(popup).off('rex:selectMedia.cke5.quickedit').on('rex:selectMedia.cke5.quickedit', function (event, filename) {
+            event.preventDefault();
+            if (popup && typeof popup.close === 'function') {
+              popup.close();
+            }
+            handleSelected(filename);
           });
         }
 

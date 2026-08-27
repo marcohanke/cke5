@@ -187,6 +187,14 @@
       }
 
       mediaPoolButton.addEventListener('click', function () {
+        var bridge = window.rex5MediaplaceBridge;
+        if (bridge && bridge.isActive()) {
+          bridge.pick(function (filename) {
+            applySelectedFilename(filename);
+          }, { filter: 'videos' });
+          return;
+        }
+
         if (typeof window.openMediaPool === 'function') {
           var previousValue = mediaPoolInput.value || '';
           try {

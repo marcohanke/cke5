@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 7.6.0
+
+### Neu
+
+* Automatische Weiche für alle Medienpool-Picker-Stellen (Medien-Link, "Bild aus Medienpool"-Button, QuickEdit, Video-Widget): Ist das AddOn [MediaPlace](https://github.com/FriendsOfREDAXO/mediaplace) aktiv, öffnet sich dessen Overlay statt des klassischen Medienpool-Popups – ohne MediaPlace ändert sich nichts. Die Erkennung läuft über ein gemeinsames, in `assets/cke5.js` definiertes `window.rex5MediaplaceBridge`-Objekt (`isActive()`/`pick()`), das sich unabhängig vom tinymce-AddOn-Pendant selbst prüft und daher keine harte Abhängigkeit auf MediaPlace einführt.
+
 ## Version 7.5.1
 
 ### Neu
