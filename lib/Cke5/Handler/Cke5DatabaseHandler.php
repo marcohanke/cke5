@@ -89,9 +89,20 @@ class Cke5DatabaseHandler
             $sql->setTable(rex::getTable(Cke5DatabaseHandler::CKE5_PROFILES))
                 ->setWhere(['name' => $name])
                 ->select('*');
-            /** @var array<string,string>|null $result */
+
+            // rex_sql::getRow() wirft eine rex_sql_exception, wenn die Abfrage
+            // keine Zeile liefert (siehe core/lib/sql/sql.php) -- fuer diesen
+            // Existenz-Check (aufgerufen von profileExist()/importProfile() bei
+            // jedem AddOn-Update/-Install fuer noch nicht angelegte Profile) ist
+            // "kein Treffer" aber ein voellig normales, erwartetes Ergebnis und
+            // kein Fehler. Ohne den getRows()-Vorab-Check landete hier bei jedem
+            // Update trotzdem ein rex_sql_exception-Log-Eintrag, siehe #230.
+            if ($sql->getRows() < 1) {
+                return null;
+            }
+
+            /** @var array<string,string> $result */
             $result = $sql->getRow();
-            if (is_null($result)) return null;
             return $result;
         } catch (rex_sql_exception $e) {
             rex_logger::logException($e);

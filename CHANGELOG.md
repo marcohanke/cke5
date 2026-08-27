@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 7.6.1
+
+### Behoben
+
+* Bei jedem AddOn-Update/-Install landete pro noch nicht angelegtem Profil ein `rex_sql_exception`-Eintrag ("Unable to fetch row...") im System-Log, obwohl funktional nichts fehlschlug – `Cke5DatabaseHandler::loadProfile()` nutzte `rex_sql::getRow()` als reinen Existenz-Check, der bei keinem Treffer aber grundsätzlich eine Exception wirft (REDAXO-Core-Verhalten). Prüft jetzt vorher `getRows()`, sodass der normale "Profil existiert noch nicht"-Fall keine Exception mehr auslöst und protokolliert. ([#230](https://github.com/FriendsOfREDAXO/cke5/issues/230))
+
 ## Version 7.6.0
 
 ### Neu
