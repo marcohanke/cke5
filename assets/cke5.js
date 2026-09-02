@@ -9,15 +9,17 @@
 
         // Gemeinsame Weiche klassischer Medienpool <-> MediaPlace, rein
         // feature-detected (kein Setting, keine harte Abhaengigkeit dieses
-        // Addons auf MediaPlace): existiert MP3.open()/.openFile() auf der
+        // Addons auf MediaPlace): existiert MP.open()/.openFile() auf der
         // Seite, wird MediaPlace benutzt, sonst bleibt jeder Aufrufer bei
         // seinem klassischen Fallback (openREXMedia/openMediaPool). Gleiches
         // globales Objekt wie im tinymce-Addon (assets/scripts/base.js) --
         // schon vorhanden guard, falls beide Addons auf derselben Seite aktiv
-        // sind.
+        // sind. MediaPlace hiess intern frueher "mp3" (MediaPool 3.0), das
+        // globale JS-Objekt war entsprechend "MP3" -- seit MediaPlace 2.0.0
+        // "MP".
         window.rex5MediaplaceBridge = window.rex5MediaplaceBridge || {
           isActive: function () {
-            return typeof MP3 !== "undefined" && typeof MP3.open === "function";
+            return typeof MP !== "undefined" && typeof MP.open === "function";
           },
           // onSelect(filename) wie bei den klassischen Popups; options.filter
           // waehlt optional den Start-Typ-Tab vor (z.B. "images", "videos"),
@@ -27,12 +29,12 @@
           // blockiert die Auswahl, analog zum args[types]-Parameter des
           // klassischen Popups.
           pick: function (onSelect, options) {
-            MP3.open(onSelect, options || {});
+            MP.open(onSelect, options || {});
           },
           // Oeffnet den Overlay direkt im Detail-Panel einer Datei (Browse-only).
           show: function (filename) {
-            if (typeof MP3.openFile === "function") {
-              MP3.openFile(filename);
+            if (typeof MP.openFile === "function") {
+              MP.openFile(filename);
             }
           }
         };

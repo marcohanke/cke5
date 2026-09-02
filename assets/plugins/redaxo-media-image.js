@@ -45,12 +45,23 @@
 
             var handleSelected = (filename) => {
               var source = mediaPath + filename;
-              var selectedElement = this.editor.model.document.selection.getSelectedElement();
-              var imageUtils = this.editor.plugins && this.editor.plugins.has('ImageUtils') ? this.editor.plugins.get('ImageUtils') : null;
-              if (imageUtils && typeof imageUtils.isImage === 'function' && imageUtils.isImage(selectedElement) && this.editor.commands.get('replaceImageSource')) {
-                this.editor.execute('replaceImageSource', { source: source });
+              var applyImage = () => {
+                var selectedElement = this.editor.model.document.selection.getSelectedElement();
+                var imageUtils = this.editor.plugins && this.editor.plugins.has('ImageUtils') ? this.editor.plugins.get('ImageUtils') : null;
+                if (imageUtils && typeof imageUtils.isImage === 'function' && imageUtils.isImage(selectedElement) && this.editor.commands.get('replaceImageSource')) {
+                  this.editor.execute('replaceImageSource', { source: source });
+                } else {
+                  this.editor.execute('insertImage', { source: source });
+                }
+              };
+
+              if (window.CKE5_MEDIA_ALT && typeof window.CKE5_MEDIA_ALT.resolve === 'function') {
+                window.CKE5_MEDIA_ALT.resolve(filename, { imageConfig: imageConfig }, (alt) => {
+                  applyImage();
+                  window.CKE5_MEDIA_ALT.applyAltToSelectedImage(this.editor, alt);
+                });
               } else {
-                this.editor.execute('insertImage', { source: source });
+                applyImage();
               }
             };
 

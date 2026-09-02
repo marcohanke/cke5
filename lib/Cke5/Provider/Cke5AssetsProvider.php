@@ -94,6 +94,7 @@ class Cke5AssetsProvider
 
             foreach ([
                 'plugins/redaxo-link-integration.js',
+                'plugins/redaxo-media-alt.js',
                 'plugins/redaxo-media-image.js',
                 'plugins/redaxo-for-lists.js',
                 'plugins/redaxo-for-table.js',

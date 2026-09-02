@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 7.7.0
+
+### Neu
+
+* **ALT-Text-Übernahme beim Bild-Einfügen aus dem Medienpool** (Toolbar-Button "Bild aus Medienpool" und QuickEdit-Slash-Menü, jeweils bei Neu-Einfügen und Bild-Austausch): Übernimmt automatisch den ALT-Text des gewählten Bildes, analog zum tinymce-AddOn. Unterstützt zusätzlich das MediaPlace-eigene ALT-Feld (`med_json_data`, Widget-Typ "alt") sowie mehrsprachige Metainfo-Felder über das AddOn [metainfo_lang_fields](https://github.com/FriendsOfREDAXO/metainfo_lang_fields). Ist die aktuelle Struktursprache bekannt (Artikel-Bearbeitung), wird sie automatisch verwendet; existieren mehrere Sprachversionen ohne bekannten Sprachkontext (z.B. außerhalb der Struktur), erscheint vor dem Einfügen eine kompakte Sprachauswahl. Neuer Endpoint `rex-api-call=cke5_media_meta` (`lib/api_cke5_media_meta.php`), neues Plugin `assets/plugins/redaxo-media-alt.js`.
+
+### Behoben
+
+* **MediaPlace-Erkennung nutzte noch das alte globale JS-Objekt `MP3`:** `window.rex5MediaplaceBridge` in `assets/cke5.js` prüfte auf `MP3.open()`/`MP3.openFile()`, MediaPlace hat sein globales Overlay-Objekt seit Version 2.0.0 aber in `MP` umbenannt. Dadurch öffnete sich bei aktuellem MediaPlace wieder der klassische Medienpool-Popup statt des Overlays. Auf `MP` aktualisiert.
+
 ## Version 7.6.2
 
 ### Behoben

@@ -365,14 +365,25 @@
 
           function handleSelected(filename) {
             var source = mediaPath + filename;
-            var selectedElement = editor.model.document.selection.getSelectedElement();
-            var imageUtils = editor.plugins && editor.plugins.has('ImageUtils') ? editor.plugins.get('ImageUtils') : null;
-            if (imageUtils && typeof imageUtils.isImage === 'function' && imageUtils.isImage(selectedElement) && editor.commands.get('replaceImageSource')) {
-              editor.execute('replaceImageSource', { source: source });
-            } else if (editor.commands.get('insertImage')) {
-              editor.execute('insertImage', { source: source });
-            } else if (editor.commands.get('imageInsert')) {
-              editor.execute('imageInsert', { source: source });
+            function applyImage() {
+              var selectedElement = editor.model.document.selection.getSelectedElement();
+              var imageUtils = editor.plugins && editor.plugins.has('ImageUtils') ? editor.plugins.get('ImageUtils') : null;
+              if (imageUtils && typeof imageUtils.isImage === 'function' && imageUtils.isImage(selectedElement) && editor.commands.get('replaceImageSource')) {
+                editor.execute('replaceImageSource', { source: source });
+              } else if (editor.commands.get('insertImage')) {
+                editor.execute('insertImage', { source: source });
+              } else if (editor.commands.get('imageInsert')) {
+                editor.execute('imageInsert', { source: source });
+              }
+            }
+
+            if (window.CKE5_MEDIA_ALT && typeof window.CKE5_MEDIA_ALT.resolve === 'function') {
+              window.CKE5_MEDIA_ALT.resolve(filename, { imageConfig: imageConfig }, function (alt) {
+                applyImage();
+                window.CKE5_MEDIA_ALT.applyAltToSelectedImage(editor, alt);
+              });
+            } else {
+              applyImage();
             }
           }
 
