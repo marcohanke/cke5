@@ -122,3 +122,111 @@ body:not(.rex-theme-light) .ck-content blockquote {
         border-left-color:#bbb;
     }
 
+
+/* ============================================================================
+   Dark theme: variables the block above does not cover yet.
+
+   The block above mainly redefines --ck-color-* (plus a few non-colour tokens). Other colour tokens
+   from the CKEditor bundle keep their light defaults, which breaks contrast as soon as the
+   surrounding text becomes light. Grouped by where they surface.
+   ============================================================================ */
+
+:root {
+    /* -- Editor content -------------------------------------------------------
+       .ck-content sets `color: var(--ck-content-font-color)`. The rule further
+       down only recolours .ck-editor__editable, so every *other* .ck-content
+       instance (style preview, balloon previews) stayed black on dark. */
+    --ck-content-font-color: hsl(0, 0%, 98%);
+
+    /* Image/table captions: .ck-content .image > figcaption and
+       .ck-content .table > figcaption. */
+    --ck-content-color-image-caption-background: #2a3541;
+    --ck-content-color-image-caption-text: hsl(0, 0%, 90%);
+    --ck-content-color-table-caption-background: #2a3541;
+    --ck-content-color-table-caption-text: hsl(0, 0%, 90%);
+
+    /* .ck-content .mention — dark crimson on a dark editable is unreadable. */
+    --ck-content-color-mention-text: #ff8fab;
+
+    /* .ck-content .pen-green / .pen-red — text colours, not backgrounds. */
+    --ck-content-highlight-pen-green: #4ade80;
+    --ck-content-highlight-pen-red: #ff6b6b;
+
+    /* -- Style panel (toolbar "Styles" dropdown) ------------------------------
+       The label strip sits under text that inherits --ck-color-text, so a light
+       strip means light-on-light. Also used as the border of disabled tiles. */
+    --ck-style-panel-button-label-background: #2a3541;
+    --ck-style-panel-button-hover-label-background: #35424f;
+    --ck-style-panel-button-hover-border-color: #56606c;
+
+    /* -- Selection and search -------------------------------------------------
+       .ck-editor__editable_inline.ck-blurred ::selection — the selection stays
+       visible after the editor loses focus, with light text on top. */
+    --ck-color-editable-blur-selection: #3d4b5a;
+
+    /* .ck-find-result and .ck-highlighted-text mark */
+    --ck-color-highlight-background: #6b5a00;
+
+    /* -- States and accents ---------------------------------------------------
+       --ck-color-base-active is the active tile border and, via the block
+       above, the background of the selected list item; --ck-color-button-on-color
+       is the *text* colour of active buttons. */
+    --ck-color-base-active: #5c9dff;
+    --ck-color-base-active-focus: #7fb3ff;
+    --ck-color-button-on-color: #5c9dff;
+
+    /* Error labels and input states (.ck-labeled-field-view.ck-error) */
+    --ck-color-base-error: #ff7a5c;
+
+    /* Check mark inside the colour picker grid (.ck-color-grid__tile .ck-icon) */
+    --ck-color-color-grid-check-icon: #9fc4ff;
+
+    /* -- Muted text ----------------------------------------------------------- */
+    /* Placeholder of an empty editable */
+    --ck-color-engine-placeholder-text: #8a99a8;
+    /* .ck-media__placeholder__url__text */
+    --ck-color-media-embed-placeholder-url-text: #9fb3c8;
+    /* Disabled textarea of the HTML embed widget */
+    --ck-html-embed-source-disabled-color: #94a3b0;
+    /* Outline drawn by the "show blocks" feature */
+    --ck-show-blocks-border-color: #6b7885;
+    /* Label of a code block (.ck-editor__editable pre[data-language]:after) */
+    --ck-color-code-block-label-background: #56606c;
+
+    /* -- Accessibility help dialog (Alt+0) ------------------------------------ */
+    --ck-accessibility-help-dialog-code-background-color: #2a3541;
+    --ck-accessibility-help-dialog-border-color: #3a4654;
+    --ck-accessibility-help-dialog-kbd-shadow-color: #11181f;
+
+    /* -- Table helper lines ---------------------------------------------------
+       Guides for borderless and layout tables — light grey is glaring here. */
+    --ck-table-content-default-border-color: #6b7885;
+    --ck-table-layout-default-border-color: #6b7885;
+    --ck-table-border-none-helper-line-color: #6b7885;
+
+    /* -- Transient states -----------------------------------------------------
+       Caption highlight animation and the image processing shimmer; both fade
+       into the caption/editable colours defined above. */
+    --ck-color-image-caption-highlighted-background: #5c4a00;
+    --ck-color-table-caption-highlighted-background: #5c4a00;
+    --ck-image-processing-background-color: #2a3541;
+    --ck-image-processing-highlight-color: #3a4654;
+
+    /* Minimap outline and position tracker */
+    --ck-color-minimap-iframe-outline: #56606c;
+    --ck-color-minimap-progress-background: #8a99a8;
+}
+
+/* Highlight markers keep their content colours so the editor still matches the
+   frontend — but the text on top inherits the light editable colour, so it has
+   to be forced back to dark. No variable covers this. */
+.ck-content :is(.marker-yellow, .marker-green, .marker-pink, .marker-blue) {
+    color: #1f2933;
+}
+
+/* The *active* search hit hardcodes background:#ff9633 without a text colour,
+   so the label falls back to the light --ck-color-text (roughly 2:1 here).
+   Keep the signal colour, darken the text instead. */
+.ck-find-result_selected {
+    color: #1f2933;
+}
