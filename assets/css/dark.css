@@ -126,9 +126,9 @@ body:not(.rex-theme-light) .ck-content blockquote {
 /* ============================================================================
    Dark theme: variables the block above does not cover yet.
 
-   The block above only redefines --ck-color-*. Every other colour token from
-   the CKEditor bundle keeps its light default, which breaks contrast as soon
-   as the surrounding text becomes light. Grouped by where they surface.
+   The block above mainly redefines --ck-color-* (plus a few non-colour tokens). Other colour tokens
+   from the CKEditor bundle keep their light defaults, which breaks contrast as soon as the
+   surrounding text becomes light. Grouped by where they surface.
    ============================================================================ */
 
 :root {
